@@ -1,0 +1,7 @@
+{
+  "allowedTools": {
+    "Write": true,
+    "Edit": true,
+    "Bash": true
+  }
+}
