@@ -39,7 +39,7 @@ learnAbook/
 │       ├── content-to-script/     # 精读报告 → 口播文案
 │       ├── deep-reader/           # 单篇文章/章节的 10 维度精读
 │       ├── doc-to-chapters/       # 任意文档 → Markdown → 按章节拆分
-│       ├── markitdown/            # 通用文件转 Markdown
+│       ├── markitdown/            # 通用文件转 Markdown + 书籍预处理
 │       ├── narrative-to-script/   # 叙事内容 → 视频解说稿
 │       ├── ocr-corrector/         # 修复扫描版 OCR 错误
 │       ├── text-humanizer-zh/     # 中文文本去 AI 腔
@@ -83,7 +83,7 @@ learnAbook/
 
 ```
 {book-name}/
-├── chapters/          # book-splitter / doc-to-chapters / extract_epub.py 原始输出
+├── chapters/          # book-splitter / doc-to-chapters / markitdown_book.py / extract_epub.py 原始输出
 │   ├── _index.md      # 章节索引
 │   ├── front-*.md     # 封面、版权、目录等前置内容
 │   ├── chapter-*.md   # 正文内容章节
@@ -134,12 +134,17 @@ bash .kimi-code/skills/book-master/scripts/filter.sh ./book-name/chapters
 `book-splitter` 本身只原生支持 PDF。EPUB 与任意文档需先用辅助脚本转换：
 
 ```bash
-# EPUB 转章节 Markdown
-python3 .kimi-code/skills/book-master/scripts/extract_epub.py /path/to/book.epub ./book-name/chapters
+# 方式 A：markitdown 书籍预处理（推荐，支持 PDF/EPUB/DOCX/PPTX 等）
+python3 .kimi-code/skills/markitdown/scripts/markitdown_book.py /path/to/book.epub ./book-name --heading-level 1
 
-# 任意文档（PDF/EPUB/DOCX/PPTX/图片等）转章节 Markdown
+# 方式 B：doc-to-chapters（与 markitdown_book.py 功能等价，入口不同）
 python3 .kimi-code/skills/doc-to-chapters/scripts/doc_to_chapters.py /path/to/book.epub ./book-name/chapters --heading-level 1
+
+# 方式 C：专用 EPUB 提取脚本
+python3 .kimi-code/skills/book-master/scripts/extract_epub.py /path/to/book.epub ./book-name/chapters
 ```
+
+`markitdown_book.py` 默认将章节输出到 `./book-name/chapters/`，结构与 `book-splitter` 兼容；`--keep-md` 可保留完整 Markdown 副本。
 
 ### 3. 视频创作工作流
 
@@ -217,6 +222,7 @@ bash .kimi-code/skills/book-master/scripts/validate.sh
 bash .kimi-code/skills/deep-reader/scripts/validate.sh
 bash .kimi-code/skills/book-reader/scripts/validate.sh
 bash .kimi-code/skills/doc-to-chapters/scripts/validate.sh
+bash .kimi-code/skills/markitdown/scripts/validate.sh
 ```
 
 `validate.sh` 通常检查：
@@ -252,7 +258,7 @@ TARGET="/Users/chouchou/Documents/Obsidian Vault/成长计划/博客"
 
 ## 常见注意事项
 
-- **PDF-only 原生支持**：`book-splitter` 只原生支持 PDF；EPUB 先用 `extract_epub.py`，任意文档可用 `doc-to-chapters`。
+- **PDF-only 原生支持**：`book-splitter` 只原生支持 PDF；EPUB 先用 `extract_epub.py`，任意文档可用 `doc-to-chapters` 或 `markitdown_book.py`。
 - **扫描版 PDF**：默认渲染为图片；如需可搜索文本，安装 Tesseract 后用 `--scan ocr`。
 - **超长章节**：单章超过 50KB 时，子代理处理时间会显著增加。
 - **书名特殊字符**：避免在源文件名中使用 `/ \ :` 等非法字符。
