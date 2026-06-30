@@ -10,7 +10,7 @@ learnAbook is a Claude Code skill collection covering three workflow domains:
 2. **AI Video Content Creation** — Article → deep reading → broadcast script → visual scene breakdown → AI image/video generation pipeline
 3. **Audio Processing** — Speech-to-text via Xunfei API
 
-All workflows are implemented as slash-command skills under `.claude/skills/`.
+All workflows are implemented as slash-command skills under `.kimi-code/skills/`.
 
 ## Skill Inventory
 
@@ -132,9 +132,6 @@ XF_API_SECRET=your-apisecret
 │   └── back-*.md      # References, index, postscript, etc.
 ├── reports/           # Deep-reader output (only for content chapters)
 │   └── chapter-*-report.md
-├── reader/            # Interactive HTML (from book-reader)
-│   ├── index.html
-│   └── chapter-*.html
 └── _master-index.md   # Synthesized cross-chapter index
 ```
 
@@ -192,7 +189,7 @@ TARGET="/Users/chouchou/Documents/Obsidian Vault/成长计划/博客"
 
 ## File Organization Rules
 
-- Skill files live under `.claude/skills/{skill-name}/` with mandatory `SKILL.md` (YAML frontmatter), optional `template.md`, `examples/`, and `scripts/`.
+- Skill files live under `.kimi-code/skills/{skill-name}/` with mandatory `SKILL.md` (YAML frontmatter), optional `template.md`, `examples/`, and `scripts/`.
 - Book outputs are sibling directories in the workspace root, named after the PDF file (extension stripped).
 - The `books/` directory is for source PDFs awaiting processing.
 - The `Kimi_Agent_书籍拆分技能/` directory is a legacy prototype — do not use for new work.
@@ -200,7 +197,7 @@ TARGET="/Users/chouchou/Documents/Obsidian Vault/成长计划/博客"
 ## Skill Validation
 
 ```bash
-bash .claude/skills/book-splitter/scripts/validate.sh
-bash .claude/skills/book-master/scripts/validate.sh
-bash .claude/skills/deep-reader/scripts/validate.sh
+bash .kimi-code/skills/book-splitter/scripts/validate.sh
+bash .kimi-code/skills/book-master/scripts/validate.sh
+bash .kimi-code/skills/deep-reader/scripts/validate.sh
 ```

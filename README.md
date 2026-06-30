@@ -238,11 +238,6 @@ AI 生成静态画面（基于 JSON 描述）
 │   ├── chapter-02-xxx-report.md
 │   └── ...
 │
-├── reader/                 # 交互式 HTML 阅读页面
-│   ├── index.html          # 书籍概览 + 章节导航
-│   ├── chapter-01.html     # 第1章阅读页（原文 + 概念卡片）
-│   └── ...
-│
 └── _master-index.md        # 总索引（书籍信息 + 章节速览 + 跨章知识网络）
 ```
 

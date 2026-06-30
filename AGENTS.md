@@ -1,3 +1,4 @@
+<!-- From: /Users/chouchou/Desktop/myProject/learn1book2.0/AGENTS.md -->
 # AGENTS.md — learnAbook 项目指南
 
 本文件面向后续维护或扩展本项目的 AI coding agent。阅读前默认你对本项目一无所知；以下内容全部基于仓库实际文件与目录结构整理，不做推测。
@@ -6,22 +7,22 @@
 
 ## 项目概述
 
-**learnAbook** 是一个 Claude Code 技能集合（skill collection），不是传统意义上的 Web 应用或服务。它通过 Claude Code 的 slash-command skill 机制，把两条 AI 辅助工作流自动化：
+**learnAbook** 是一个 Claude Code 技能集合（skill collection），不是传统意义上的 Web 应用、服务或需要编译的软件项目。它通过 Claude Code 的 slash-command skill 机制，把两条 AI 辅助工作流自动化：
 
-1. **AI 深度读书工作流**：PDF → 按目录拆分为章节 Markdown → OCR 校正 → 自动过滤非内容章节 → 并行深度精读 → 生成总索引 → 可选交互式 HTML 阅读页面 → 基于知识点的问答。
+1. **AI 深度读书工作流**：PDF/EPUB → 按目录拆分为章节 Markdown → OCR 校正 → 自动过滤非内容章节 → 并行深度精读 → 生成总索引 → 基于知识点的问答。
 2. **AI 视频内容创作工作流**：文章/音频 → 深度精读 → 口播文案 → 视觉场景分镜 JSON → 批量图片生成 → 后续视频制作。
 
 此外还有一个独立的 **音频转写技能**，调用讯飞语音转写大模型 API 将音频转为带时间戳的文本。
 
-项目根目录同时充当**工作空间（workspace）**：书籍拆分后的章节、精读报告、HTML 阅读页都会以书名为目录名直接生成在根目录下。
+项目根目录同时充当**工作空间（workspace）**：书籍拆分后的章节、精读报告都会以书名为目录名直接生成在根目录下。
 
 ---
 
 ## 仓库结构与代码组织
 
 ```
-learnAbook-master/
-├── .claude/
+learnAbook/
+├── .kimi-code/
 │   ├── settings.json              # Claude Code 权限配置（允许 Write/Edit/Bash）
 │   └── skills/                    # 所有 slash-command skill 定义
 │       ├── article-to-richpost/   # 文章 → 公众号/头条号富文本 HTML
@@ -37,6 +38,7 @@ learnAbook-master/
 │       ├── content-to-human-script/   # 精读报告 → 更口语化的脚本
 │       ├── content-to-script/     # 精读报告 → 口播文案
 │       ├── deep-reader/           # 单篇文章/章节的 10 维度精读
+│       ├── doc-to-chapters/       # 任意文档 → Markdown → 按章节拆分
 │       ├── markitdown/            # 通用文件转 Markdown
 │       ├── narrative-to-script/   # 叙事内容 → 视频解说稿
 │       ├── ocr-corrector/         # 修复扫描版 OCR 错误
@@ -48,12 +50,15 @@ learnAbook-master/
 ├── skills-lock.json               # 引用外部 ljg-skills（lijigang/ljg-skills）的锁定文件
 ├── README.md                      # 面向用户的中文使用说明
 ├── CLAUDE.md                      # 面向 Claude Code 的英文项目指南
+├── AGENTS.md                      # 本文件
 ├── .gitignore                     # 忽略 PDF 源文件、生成的书籍目录、.env 等
 │
-├── 仿生人会梦见电子羊吗/          # 已处理书籍输出示例
-├── 我们何以成为后人类/            # 已处理书籍输出示例
-├── 有意识的心灵：一种基础理论研究/ # 已处理书籍输出示例（含 reader/）
-└── 未处理书籍/                    # 等待处理的 EPUB 源文件
+├── 未处理书籍/                    # 等待处理的 EPUB 源文件
+│
+└── {book-name}/                   # 已处理书籍输出目录（工作区产物，被 .gitignore 忽略）
+    ├── chapters/                  # 拆分后的原始章节
+    ├── reports/                   # deep-reader 输出的 10 维度精读报告
+    └── _master-index.md           # 全书总索引
 ```
 
 ### Skill 目录约定
@@ -61,7 +66,7 @@ learnAbook-master/
 每个 skill 目录内部结构基本一致：
 
 ```
-.claude/skills/{skill-name}/
+.kimi-code/skills/{skill-name}/
 ├── SKILL.md                       # 核心说明，必须包含 YAML frontmatter（name / description / allowed-tools 等）
 ├── template.md                    # 任务输出模板（deep-reader、content-to-script 等需要）
 ├── examples/
@@ -69,25 +74,22 @@ learnAbook-master/
 ├── scripts/                       # 该 skill 的辅助脚本
 │   ├── *.py / *.sh
 │   └── validate.sh                # 检查 skill 结构完整性和依赖
-└── references/                    # 参考资料（可选，如 style-presets、formula_library）
+└── references/                    # 参考资料（可选）
 ```
 
 ### 工作空间输出约定
 
-每本书处理完成后，会在项目根目录生成以 PDF 文件名（去扩展名）命名的目录：
+每本书处理完成后，会在项目根目录生成以源文件名（去扩展名）命名的目录：
 
 ```
 {book-name}/
-├── chapters/          # book-splitter 原始输出
+├── chapters/          # book-splitter / doc-to-chapters / extract_epub.py 原始输出
 │   ├── _index.md      # 章节索引
 │   ├── front-*.md     # 封面、版权、目录等前置内容
 │   ├── chapter-*.md   # 正文内容章节
 │   └── back-*.md      # 参考文献、索引、后记等后置内容
 ├── reports/           # deep-reader 输出的 10 维度精读报告
 │   └── chapter-*-report.md
-├── reader/            # book-reader 输出的交互式 HTML（可选）
-│   ├── index.html
-│   └── chapter-*.html
 └── _master-index.md   # 全书总索引
 ```
 
@@ -99,8 +101,9 @@ learnAbook-master/
 - **PDF 处理**：PyMuPDF（`fitz`）。
 - **OCR（可选）**：`pytesseract` + `Pillow` + 系统级 Tesseract 及语言包。
 - **EPUB 处理（可选）**：`ebooklib` + `BeautifulSoup` + `lxml`。
+- **通用文档转换（可选）**：Microsoft `markitdown`。
 - **交互式阅读页**：纯静态 HTML/CSS/JS（无前端框架、无构建步骤），由 `book-reader/scripts/generate.py` 直接生成。
-- **配置**：YAML frontmatter 用于章节文件和 SKILL.md；JSON 用于 skills-lock、进度状态、视觉分镜输出；`.env` 用于 API 密钥。
+- **配置**：YAML frontmatter 用于章节文件和 SKILL.md；JSON 用于 skills-lock、权限设置；`.env` 用于 API 密钥。
 - **版本控制**：Git；大型 PDF 与生成书籍目录已加入 `.gitignore`。
 
 **注意**：本仓库没有 `pyproject.toml`、`package.json`、`Cargo.toml`、`requirements.txt`、`Makefile` 等传统构建或依赖清单文件。依赖通过各 skill 的 `validate.sh` 和 README/CLAUDE.md 中的说明手动安装。
@@ -116,25 +119,26 @@ learnAbook-master/
 /book-master /path/to/book.pdf
 
 # 仅拆分 PDF
-python3 .claude/skills/book-splitter/scripts/split_book.py split /path/to/book.pdf -o ./book-name/chapters --level 1 --scan image
+python3 .kimi-code/skills/book-splitter/scripts/split_book.py split /path/to/book.pdf -o ./book-name/chapters --level 1 --scan image
 
 # 过滤非内容章节
-bash .claude/skills/book-master/scripts/filter.sh ./book-name/chapters
-
-# 生成交互式阅读页
-python3 .claude/skills/book-reader/scripts/generate.py ./book-name
+bash .kimi-code/skills/book-master/scripts/filter.sh ./book-name/chapters
 ```
 
 `split_book.py` 支持的参数：
 - `--level 1|2`：按一级或二级目录拆分。
 - `--scan text|image|ocr`：扫描版 PDF 处理方式（默认 `image`，即渲染为 200 DPI PNG 嵌入 Markdown；`ocr` 需要 Tesseract）。
 
-### 2. EPUB 预处理
+### 2. EPUB / 任意文档预处理
 
-`book-splitter` 本身只支持 PDF。EPUB 需先用辅助脚本转换：
+`book-splitter` 本身只原生支持 PDF。EPUB 与任意文档需先用辅助脚本转换：
 
 ```bash
-python3 .claude/skills/book-master/scripts/extract_epub.py /path/to/book.epub ./book-name/chapters
+# EPUB 转章节 Markdown
+python3 .kimi-code/skills/book-master/scripts/extract_epub.py /path/to/book.epub ./book-name/chapters
+
+# 任意文档（PDF/EPUB/DOCX/PPTX/图片等）转章节 Markdown
+python3 .kimi-code/skills/doc-to-chapters/scripts/doc_to_chapters.py /path/to/book.epub ./book-name/chapters --heading-level 1
 ```
 
 ### 3. 视频创作工作流
@@ -144,7 +148,10 @@ python3 .claude/skills/book-master/scripts/extract_epub.py /path/to/book.epub ./
 /broadcast-maker ./article.md
 
 # 已有精读报告转文案
-python3 # 该 skill 主要是 prompt 驱动，无独立脚本
+/content-to-script ./report.md --duration 8min
+
+# 文案转视觉分镜
+/article-to-visual-scenes ./script.md
 
 # 批量 Lovart 生图
 python3 scripts/batch_lovart_vangogh.py
@@ -192,7 +199,7 @@ _index.md / 封面 / 书名 / 版权 / 目录 / 参考文献 / 索引 / 献辞
 
 ### 并行限制
 
-`book-master` 在调用 `/deep-reader` 时，最多并行启动 **8 个子代理**；超出需分批处理，避免资源耗尽。
+`book-master` 与 `ocr-corrector` 在调用子代理时，最多并行启动 **8 个子代理**；超出需分批处理，避免资源耗尽。
 
 ### OCR 校正注意
 
@@ -205,15 +212,17 @@ _index.md / 封面 / 书名 / 版权 / 目录 / 参考文献 / 索引 / 献辞
 没有单元测试框架。每个核心 skill 提供结构验证脚本：
 
 ```bash
-bash .claude/skills/book-splitter/scripts/validate.sh
-bash .claude/skills/book-master/scripts/validate.sh
-bash .claude/skills/deep-reader/scripts/validate.sh
+bash .kimi-code/skills/book-splitter/scripts/validate.sh
+bash .kimi-code/skills/book-master/scripts/validate.sh
+bash .kimi-code/skills/deep-reader/scripts/validate.sh
+bash .kimi-code/skills/book-reader/scripts/validate.sh
+bash .kimi-code/skills/doc-to-chapters/scripts/validate.sh
 ```
 
 `validate.sh` 通常检查：
 - 必需文件是否存在（`SKILL.md`、`template.md`、核心脚本等）
 - `SKILL.md` 是否包含正确的 YAML frontmatter
-- Python 依赖是否已安装（如 `fitz`、`pytesseract`）
+- Python 依赖是否已安装（如 `fitz`、`pytesseract`、`markitdown`）
 
 ---
 
@@ -239,14 +248,12 @@ cp -r "{book-name}" "$TARGET/"
 TARGET="/Users/chouchou/Documents/Obsidian Vault/成长计划/博客"
 ```
 
-交互式阅读页面 `reader/index.html` 直接用浏览器打开即可，无需服务器。
-
 ---
 
 ## 常见注意事项
 
-- **PDF-only**：`book-splitter` 只支持 PDF；EPUB 先用 `extract_epub.py` 预处理。
+- **PDF-only 原生支持**：`book-splitter` 只原生支持 PDF；EPUB 先用 `extract_epub.py`，任意文档可用 `doc-to-chapters`。
 - **扫描版 PDF**：默认渲染为图片；如需可搜索文本，安装 Tesseract 后用 `--scan ocr`。
 - **超长章节**：单章超过 50KB 时，子代理处理时间会显著增加。
-- **书名特殊字符**：避免在 PDF 文件名中使用 `/ \ :` 等非法字符。
+- **书名特殊字符**：避免在源文件名中使用 `/ \ :` 等非法字符。
 - **外部路径硬编码**：`batch_lovart_vangogh.py` 和 README/CLAUDE.md 中的 Obsidian 路径包含 macOS 用户路径 `/Users/chouchou/`，在 Windows 或其他机器上需相应调整。
