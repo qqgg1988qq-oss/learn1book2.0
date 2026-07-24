@@ -80,6 +80,15 @@ else
     echo "⚠️ 输出目录不存在，首次运行时会自动创建: $OUTPUT_DIR"
 fi
 
+# 检查 evidence-query 依赖
+EVIDENCE_QUERY_SCRIPT="/Users/chouchou/Desktop/myProject/learn1book2.0/.kimi-code/skills/evidence-query/scripts/evidence_query.py"
+if [ -f "$EVIDENCE_QUERY_SCRIPT" ]; then
+    echo "✅ evidence-query 脚本存在: $EVIDENCE_QUERY_SCRIPT"
+else
+    echo "❌ evidence-query 脚本缺失，请确认项目级 skill 已安装"
+    ERRORS=$((ERRORS + 1))
+fi
+
 echo ""
 if [ $ERRORS -eq 0 ]; then
     echo "=== 验证通过 ✅ ==="

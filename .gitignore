@@ -19,3 +19,20 @@ books/*.pdf
 
 # API secrets
 .env
+
+# Local evidence vault cache
+evidence-skills-note.md
+.kimi-code/skills/evidence-collector/scripts/*.pyc
+.kimi-code/skills/evidence-query/scripts/*.pyc
+
+# Source books at root (zip / PDF, large binary files)
+/*.zip
+/*.pdf
+
+# Book output directories (workspace artifacts)
+中国道教史*/
+思考*/
+
+# Python cache
+__pycache__/
+*.pyc

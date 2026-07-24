@@ -44,7 +44,9 @@ learnAbook/
 │       ├── ocr-corrector/         # 修复扫描版 OCR 错误
 │       ├── text-humanizer-zh/     # 中文文本去 AI 腔
 │       ├── text-to-image-prompt/  # 短文 → 写实场景生图提示词
-│       └── toutiao-title-craft/   # 今日头条爆款标题 + 标签
+│       ├── toutiao-title-craft/   # 今日头条爆款标题 + 标签
+│       ├── evidence-collector/    # 从文章提取概念/数据/案例/金句到论据库
+│       └── evidence-query/        # 从论据库检索相关写作素材
 ├── scripts/
 │   └── batch_lovart_vangogh.py    # 基于 LovartClient 批量生成静态场景图
 ├── skills-lock.json               # 引用外部 ljg-skills（lijigang/ljg-skills）的锁定文件
