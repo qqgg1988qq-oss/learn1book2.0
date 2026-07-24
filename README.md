@@ -1,6 +1,6 @@
-# learnAbook — Claude Code 技能集合
+# learnAbook — Claude Code / Kimi Code 技能集合
 
-基于 Claude Code 的自动化技能集合，覆盖 **AI 深度读书** 和 **AI 视频内容创作** 两大工作流。
+基于 Claude Code / Kimi Code 的自动化技能集合（共 33 个 skill），覆盖 **AI 深度读书**、**AI 视频/图文内容创作** 和 **音频转写** 三大工作流。
 
 ---
 
@@ -16,24 +16,47 @@
 | `/book-master` | 一键完成：拆分 → 过滤 → 并行精读 | 完整精读一本书（推荐） |
 | `/book-reader` | 生成左右分栏交互式 HTML 阅读页面 | 想在浏览器中高亮概念、滚动阅读 |
 | `/book-qa` | 基于已提取的知识点回答提问 | 读完后有问题想问 |
+| `/book-reading-share` | 读书分享口播文案一站式（精读 → 论据收集 → 口播） | 把整本书做成一期读书分享 |
+| `/batch-knowledge-extractor` | 批量精读多个文件（PDF/MD/TXT/SRT）并整合总报告 | 处理一批资料而非一本书 |
+| `/evidence-collector` | 从材料提取概念/数据/案例/金句存入论据库 | 读完想沉淀写作素材 |
+| `/evidence-query` | 按主题/场景/质量分从论据库检索素材 | 写作前找论据支撑 |
 
-### 二、AI 视频内容创作工作流
+### 二、AI 视频/图文内容创作工作流
 
 | 技能 | 作用 | 何时使用 |
 |------|------|----------|
 | `/broadcast-maker` | 文章 → 深度精读 → 口播文案（一站式） | 输入文章，直接输出视频文案 |
 | `/content-to-script` | 精读报告 → 口播文案 | 已有精读报告，转为视频脚本 |
+| `/batch-content-to-script` | 批量把多份精读报告转成口播文案 | 一次处理整本书的报告 |
 | `/content-to-human-script` | 内容 → 人工口播文案 | 需要更口语化、带语气标注的脚本 |
 | `/narrative-to-script` | 叙事内容 → 视频脚本 | 故事类内容转视频 |
-| `/article-to-richpost` | 文章 → 富文本帖子 | 生成带格式的朋友圈/公众号帖子 |
+| `/story-narration-script` | 剧情类内容 → 口播讲解稿 | 小说/剧情解说（情节拆解→成稿） |
+| `/article-to-richpost` | 文章 → 公众号/头条号富文本 HTML | 直接粘贴到编辑器排版发布 |
+| `/article-to-visual-richpost` | 文章 → 视觉场景 JSON + 图文排版 HTML | 图文混排一站式产出 |
 | `/article-to-visual-scenes` | 文章/文案 → 视觉场景分镜 JSON | 需要为视频制作静态分镜画面 |
+| `/text-to-image-prompt` | 短文 → 写实场景 AI 生图提示词（图中不带文字） | 给文章/短文配图 |
 | `/text-humanizer-zh` | 中文文本润色 | 让机器生成的文字更自然 |
 
-### 三、音频处理
+### 三、头条/引流/写作配套
+
+| 技能 | 作用 | 何时使用 |
+|------|------|----------|
+| `/article-viral-hook` | 文章 → 痛点匹配 + AA/AG 两段式引流短帖 + 爆款标题 | 给文章写推广引流帖 |
+| `/article-to-han-post` | 文章 → 韩寒风格引流帖（三阶段流水线） | 要韩寒口语化风格的二创 |
+| `/toutiao-title-craft` | 今日头条爆款标题 + 标签（也可做公众号 SEO 标题） | 发布前起标题 |
+| `/toutiao-comment-generator` | 按话题/文章 + 目标情绪生成高互动头条评论 | 评论区引流、蹭热点 |
+| `/hot-pain-match` | 抓取今日头条 + 微信热搜，匹配 40 岁痛点图谱 | 找当日借势热点切入点 |
+| `/apag-writing-outline` | APAG 框架生成说服性写作大纲 | 写销售页/Newsletter/口播大纲 |
+| `/article-claims-extractor` | 提取文章的核心观点、分论点和隐含主张 | 做评论、摘要、知识整理 |
+| `/article-claims-to-card` | 观点提取 + 调用 xl-card 铸卡一站式 | 把文章观点做成概念卡 |
+| `/xl-card` | 文案 → 结构化 JSON 概念卡片 | 供 Lovart/ljg-card 等生图工具渲染 |
+
+### 四、其他
 
 | 技能 | 作用 | 何时使用 |
 |------|------|----------|
 | `/audio2text` | 音频文件 → 文本（讯飞语音转写） | 转录播客、会议录音、视频音频 |
+| `/council` | 多历史思想家角色对复杂问题做结构化审议 | 需要多角度深度分析 |
 
 ## 快速开始
 
@@ -118,23 +141,40 @@ Claude: [整合多章知识回答]
 
 > ⚠️ `/book-qa` 必须提供**完整绝对路径**，不能只写书名。
 
+### 场景七：整本书做成读书分享口播
+
+```
+/book-reading-share /Users/chouchou/Desktop/myProject/learnAbook/某本书
+```
+
+自动完成：各章节深度精读 → 收集概念/数据/案例/金句论据 → 融合全书总索引生成一篇有人味的读书分享口播文案。
+
+### 场景八：沉淀与检索论据库
+
+```
+/evidence-collector ./report.md        # 把材料里的概念/数据/案例/金句存进论据库
+/evidence-query 中年失业               # 写作前按主题检索素材
+```
+
+论据库统一存放在 Obsidian 参考资料目录，入库前自动去重/合并。
+
 ### 视频内容创作工作流
 
-#### 场景七：文章转视频文案
+#### 场景九：文章转视频文案
 
 ```
 /broadcast-maker ./article.md
 ```
 
-自动完成：深度精读（10 维度分析）→ 询问视频时长 → 生成口播文案 → 保存到 Obsidian 博客目录。
+自动完成：深度精读（10 维度分析）→ 检索本地论据库补充素材 → 询问视频时长 → 生成口播文案 → 保存到 Obsidian 博客目录。
 
-#### 场景八：已有精读报告转视频文案
+#### 场景十：已有精读报告转视频文案
 
 ```
 /content-to-script ./report.md --duration 8min
 ```
 
-#### 场景九：文案转视觉分镜
+#### 场景十一：文案转视觉分镜
 
 ```
 /article-to-visual-scenes ./script.md
@@ -142,7 +182,15 @@ Claude: [整合多章知识回答]
 
 输出 JSON 分镜文件，每个场景包含：标题、静态画面描述（背景/主体/构图/色彩/文字），可直接用于 AI 生图。
 
-#### 场景十：中文文本润色
+#### 场景十二：文章一站式图文排版
+
+```
+/article-to-visual-richpost ./article.md
+```
+
+先拆解为视觉场景 JSON，再按场景位置生成排好版的富文本 HTML，可直接粘贴进公众号/头条号编辑器。
+
+#### 场景十三：中文文本润色
 
 ```
 /text-humanizer-zh ./draft.md
@@ -150,9 +198,27 @@ Claude: [整合多章知识回答]
 
 让机器生成的文字更自然、更像人写的。
 
+### 头条引流工作流
+
+#### 场景十四：热搜找切入点
+
+```
+/hot-pain-match
+```
+
+自动抓取今日头条 + 微信实时热搜，与 40 岁中年危机痛点图谱（20 个痛点）交叉匹配，输出「最具创作价值」的热搜排行和切入角度。
+
+#### 场景十五：起标题 + 写引流帖
+
+```
+/toutiao-title-craft ./article.md      # 至少 10 个爆款标题候选 + 推荐标签
+/article-viral-hook ./article.md       # 痛点匹配 + AA/AG 两段式引流短帖
+/toutiao-comment-generator             # 按话题/文章生成 5 种风格的高互动评论
+```
+
 ### 音频处理
 
-#### 场景十一：音频转文字
+#### 场景十六：音频转文字
 
 ```
 /audio2text ./recording.mp3
@@ -199,6 +265,8 @@ reports/ 目录（每章一份 10 维度报告）
     ↓
 /book-qa 随时提问
     ↓
+/evidence-collector 沉淀论据库（可选）
+    ↓
 同步到 Obsidian 知识库
 ```
 
@@ -222,6 +290,22 @@ AI 生成静态画面（基于 JSON 描述）
 发布
 ```
 
+### 头条引流工作流
+
+```
+/hot-pain-match 找当日热点切入点
+    ↓
+写文章/口播文案（broadcast-maker 等）
+    ↓
+/toutiao-title-craft 起标题 + 标签
+    ↓
+/article-viral-hook 生成引流短帖
+    ↓
+/toutiao-comment-generator 评论区互动文案
+    ↓
+/article-to-richpost 排版发布
+```
+
 ## 输出结构
 
 ```
@@ -238,6 +322,8 @@ AI 生成静态画面（基于 JSON 描述）
 │   ├── chapter-02-xxx-report.md
 │   └── ...
 │
+├── evidence/               # 论据卡片（可选，evidence-collector 输出）
+│
 └── _master-index.md        # 总索引（书籍信息 + 章节速览 + 跨章知识网络）
 ```
 
@@ -251,6 +337,12 @@ pip install PyMuPDF
 pip install pytesseract pillow
 brew install tesseract tesseract-lang        # macOS
 sudo apt-get install tesseract-ocr tesseract-ocr-chi-sim  # Ubuntu
+
+# EPUB 处理（可选）
+pip install ebooklib beautifulsoup4 lxml
+
+# 富文本繁转简（可选，generate_richpost.py 用，缺库时自动降级）
+pip install opencc
 ```
 
 ## 扫描版 PDF 处理
@@ -286,7 +378,8 @@ cp -r "{book-name}" "$TARGET/"
 
 ## 注意事项
 
-- **EPUB 书籍**：`book-splitter` 只支持 PDF。EPUB 需先用 `ebooklib` + `BeautifulSoup` 提取为 Markdown，按 `chapters/` 格式存放后直接进入过滤+精读步骤
+- **EPUB 书籍**：`book-splitter` 只支持 PDF。EPUB 用 `python3 .kimi-code/skills/book-master/scripts/extract_epub.py book.epub ./book-name/chapters` 提取；若每章被拆成大量碎 xhtml，改用根目录的 `merge_epub_chapters.py`
 - **并行上限**：子代理最多 8 个并行，超出分批处理
 - **超长章节**：单章 >50KB 时，子代理处理时间会增加
 - **书名含特殊字符**：确保 PDF 文件名合法（避免 `/` `\` `:` 等字符）
+- **论据库路径**：`evidence-collector` / `evidence-query` / `xl-card` 的输出目录硬编码为 Obsidian 库内路径，换机器需相应调整
